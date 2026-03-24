@@ -1,7 +1,6 @@
-import { AppBar, Toolbar, Typography, Button, Box, Avatar
-} from "@mui/material";
+import { AppBar, Toolbar, Typography, Button, Box, Avatar} from "@mui/material";
 
-export default function Header({ user, onLogout }) {
+const Header = ({ user, onLogout }) => {
   return (
     <AppBar position="static" elevation={2} sx={{ backgroundColor: "#1976d2" }}>
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -25,3 +24,5 @@ export default function Header({ user, onLogout }) {
     </AppBar>
   );
 }
+
+export default Header;

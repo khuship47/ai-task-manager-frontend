@@ -18,8 +18,7 @@ const statusLabels = {
   in_progress: 'In Progress',
   done: 'Done'
 }
-
-export default function TaskCard({ task, onDelete }) {
+const TaskCard = ({ task, onDelete }) => {
   return (
     <Card
       sx={{
@@ -73,7 +72,7 @@ export default function TaskCard({ task, onDelete }) {
           />
           {task.due_date && (
             <Chip
-              label={`Due: ${new Date(task.due_date).toLocaleDateString()}`}
+              label={`Due: ${task.due_date}`}
               size="small"
               sx={{ backgroundColor: '#f5f5f5', fontSize: '11px' }}
             />
@@ -84,3 +83,5 @@ export default function TaskCard({ task, onDelete }) {
     </Card>
   )
 }
+
+export default TaskCard;

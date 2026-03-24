@@ -1,16 +1,19 @@
 import { useState } from 'react'
-import {
-  Box, Typography, Button, Dialog, DialogTitle,
+import { Box, Typography, Button, Dialog, DialogTitle,
   DialogContent, DialogActions, TextField, Select, MenuItem
 } from '@mui/material'
 import { supabase } from '../supabaseClient'
 
-export default function Tasks({ open, setOpen, selectedCategory, onTaskAdded }) {
+const Tasks = ({ open, setOpen, selectedCategory, onTaskAdded }) => {
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
     const [status, setStatus] = useState('todo')
     const [priority, setPriority] = useState('medium')
-    const [dueDate, setDueDate] = useState('')
+
+    const today = new Date().toLocaleDateString('en-CA', {
+        timeZone: 'America/New_York'
+    })
+    const [dueDate, setDueDate] = useState(today)
 
     const handleAdd = async () => {
         if (!title.trim()) return
@@ -24,10 +27,10 @@ export default function Tasks({ open, setOpen, selectedCategory, onTaskAdded }) 
             },
             body: JSON.stringify({
                 title,
-                description,
+                description: description || null,
                 status,
                 priority,
-                due_date: dueDate,
+                due_date: dueDate || today,
                 category_id: selectedCategory?.id
             })
         })
@@ -40,7 +43,7 @@ export default function Tasks({ open, setOpen, selectedCategory, onTaskAdded }) 
         setDescription('')
         setStatus('todo')
         setPriority('medium')
-        setDueDate('')
+        setDueDate(today)
         setOpen(false)
     }
 
@@ -98,8 +101,12 @@ export default function Tasks({ open, setOpen, selectedCategory, onTaskAdded }) 
 
             <DialogActions>
                 <Button onClick={() => setOpen(false)}>Cancel</Button>
-                <Button onClick={handleAdd} variant="contained">Add</Button>
+                <Button onClick={handleAdd} variant="contained"
+                disabled={!title || !dueDate || !selectedCategory}
+                >Add</Button>
             </DialogActions>
         </Dialog>
     )
 }
+
+export default Tasks;

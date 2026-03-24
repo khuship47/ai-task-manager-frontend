@@ -1,18 +1,18 @@
 import { useState } from 'react'
 import { supabase } from '../supabaseClient'
-import { Box, Typography, Button,TextField, InputAdornment, IconButton
- } from '@mui/material'
+import { Box, Typography, Button,TextField, InputAdornment, IconButton} from '@mui/material'
 import { MdOutlineVisibility, MdOutlineVisibilityOff  } from "react-icons/md";
 
-export default function Login() {
+const Login = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [isSignUp, setIsSignUp] = useState(false)
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
-const [showPassword, setShowPassword] = useState(false);
-const handleClickShowPassword = () => setShowPassword(!showPassword);
-const handleMouseDownPassword = () => setShowPassword(!showPassword);
+
+    const [showPassword, setShowPassword] = useState(false);
+    const handleClickShowPassword = () => setShowPassword(!showPassword);
+
     const handleSubmit = async (e) => {
         e.preventDefault()
         setError('')
@@ -22,11 +22,17 @@ const handleMouseDownPassword = () => setShowPassword(!showPassword);
         ? await supabase.auth.signUp({ email, password })
         : await supabase.auth.signInWithPassword({ email, password })
         console.log(error)
-        if (error) setError(error.message)
+        if (error) {
+            setError(error.message)
+
+            setTimeout(() => {
+                setError('')
+            }, 2000)
+        }
         setLoading(false)
     }
 
-     return (
+    return (
         <Box
             sx={{
                 display: "flex",
@@ -111,6 +117,14 @@ const handleMouseDownPassword = () => setShowPassword(!showPassword);
                     {loading ? "Loading..." : isSignUp ? "Sign Up" : "Login"}
                 </Button>
 
+                <Box>
+                    {error && (
+                        <Typography sx={{ mb: 2, color: "red", fontSize: "14px" }}>
+                            {error}
+                        </Typography>
+                    )}
+                </Box>
+
                 {/* Footer */}
                 <Typography
                     sx={{
@@ -129,3 +143,5 @@ const handleMouseDownPassword = () => setShowPassword(!showPassword);
         </Box>
     );
 }
+
+export default Login;

@@ -3,11 +3,11 @@ import { Box, Typography, Button, CircularProgress } from '@mui/material'
 import { supabase } from '../supabaseClient'
 import Sidebar from '../components/SideBar'
 import Tasks from '../components/Tasks'
-import { MdAdd, MdDelete } from "react-icons/md";
+import { MdAdd } from "react-icons/md";
 import TaskCard from '../components/TaskCard'
+import AiPanel from '../components/AiPanel'
 
-
-export default function Home() {
+const Home = () => {
   const [categories, setCategories] = useState([])
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [open, setOpen] = useState(false)
@@ -65,6 +65,29 @@ export default function Home() {
     setCategories([...categories, newCat])
   }
 
+  const handleUpdateCategory = async (category) => {
+    const { data: { session } } = await supabase.auth.getSession()
+
+    const res = await fetch(`http://localhost:5000/api/categories/${category.id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`
+      },
+      body: JSON.stringify(category)
+    })
+
+    const updatedCat = await res.json()
+
+    // update UI properly
+    setCategories(categories.map(c =>
+      c.id === updatedCat.id ? updatedCat : c
+    ))
+    if (selectedCategory?.id === updatedCat.id) {
+      setSelectedCategory(updatedCat)
+    }
+  }
+
   const handleDeleteCategory = async (id) => {
     const { data: { session } } = await supabase.auth.getSession()
     await fetch(`http://localhost:5000/api/categories/${id}`, {
@@ -75,7 +98,7 @@ export default function Home() {
     if (selectedCategory?.id === id) setSelectedCategory(null)
   }
 
-      const handleDeleteTask = async (id) => {
+  const handleDeleteTask = async (id) => {
     const { data: { session } } = await supabase.auth.getSession()
     await fetch(`http://localhost:5000/api/tasks/${id}`, {
       method: 'DELETE',
@@ -83,6 +106,7 @@ export default function Home() {
     })
     setTasks(tasks.filter(t => t.id !== id))
   }
+
   return (
     <Box sx={{ display: 'flex' }}>
       <Sidebar
@@ -92,6 +116,7 @@ export default function Home() {
         onSelectCategory={setSelectedCategory}
         onAddCategory={handleAddCategory}
         onDeleteCategory={handleDeleteCategory}
+        onUpdateCategory={handleUpdateCategory}
       />
 
       {/* Main content area */}
@@ -111,6 +136,7 @@ export default function Home() {
               >
                 Add Task
               </Button>
+              <AiPanel tasks={tasks} />
             </Box>
 
             {/* Task cards */}
@@ -152,3 +178,5 @@ export default function Home() {
     </Box>
   )
 }
+
+export default Home;

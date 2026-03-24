@@ -5,7 +5,7 @@ import Login from './pages/Login'
 import Home from './pages/Home'
 import Header from './components/Header'
 
-export default function App() {
+const App = () => {
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
 
@@ -45,3 +45,5 @@ export default function App() {
     </BrowserRouter>
   )
 }
+
+export default App;

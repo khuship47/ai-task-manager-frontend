@@ -1,18 +1,61 @@
-# React + Vite
+# AI Task Manager — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React frontend for the AI Task Manager app.
 
-Currently, two official plugins are available:
+## Tech Stack
+- React + Vite
+- Material UI (MUI)
+- Supabase Auth
+- Groq AI integration
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
+- Sign up / Login
+- Create and manage categories
+- Add tasks with priority, status, due date
+- AI-powered task prioritization
+- Collapsible sidebar
+- Responsive design
 
-## React Compiler
+## Setup
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+1. Install dependencies:
+   yarn install
 
-Note: This will impact Vite dev & build performances.
+2. Create a `.env` file:
+   VITE_SUPABASE_URL=your_supabase_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   VITE_API_URL=http://localhost:5000
 
-## Expanding the ESLint configuration
+3. Run the app:
+   yarn dev
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+4. Open http://localhost:5173
+
+## Requirements
+- Backend must be running on port 5000
+- Backend repo: https://github.com/khuship47/ai-task-manager-backend
+
+## Database Setup
+Run the following SQL in your Supabase SQL editor:
+
+CREATE TABLE categories (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  color TEXT DEFAULT '#6366f1',
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE tasks (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
+  title TEXT NOT NULL,
+  description TEXT,
+  status TEXT DEFAULT 'todo' CHECK (status IN ('todo', 'in_progress', 'done')),
+  priority TEXT DEFAULT 'medium' CHECK (priority IN ('low', 'medium', 'high')),
+  due_date DATE,
+  ai_suggestion TEXT,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
